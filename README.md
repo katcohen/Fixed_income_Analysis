@@ -12,6 +12,10 @@ Notebooks covering:
 - `bond_pricing_duration_convexity.ipynb`
 - `merton_model.ipynb`
 
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
 ## Environment
 `pip install -r requirements.txt` or `conda env create -f environment.yml`
 
