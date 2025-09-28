@@ -1,3 +1,5 @@
+Source: [Merton Model_Large HY Telecom](https://github.com/katcohen/Fixed_income_Analysis/blob/main/MertonModel_%20Large_HY_Telecom.ipynb)
+
 # Credit Risk Snapshot — Merton (Structural) Model
 
 **Setup (inputs from notebook)**  
