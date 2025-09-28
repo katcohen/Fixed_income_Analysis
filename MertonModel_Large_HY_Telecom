@@ -1,0 +1,116 @@
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import norm
+from pathlib import Path
+
+# -----------------------------
+# Merton (1974) structural model
+# -----------------------------
+class MertonModel:
+    """
+    Parameters
+    ----------
+    asset_value : float        # V0
+    debt_value : float         # Face value D due at T
+    risk_free_rate : float     # r (annual, decimal)
+    sigma_asset : float        # asset vol (annual, decimal)
+    time_to_maturity : float   # T in years
+    """
+    def __init__(self, asset_value, debt_value, risk_free_rate, sigma_asset, time_to_maturity):
+        self.asset_value = float(asset_value)
+        self.debt_face   = float(debt_value)
+        self.r           = float(risk_free_rate)
+        self.sigma_A     = float(sigma_asset)
+        self.T           = float(time_to_maturity)
+
+    def _d1_d2(self):
+        if self.T <= 0 or self.sigma_A <= 0:
+            raise ValueError("time_to_maturity and sigma_asset must be > 0")
+        sigma_sqrtT = self.sigma_A * np.sqrt(self.T)
+        d1 = (np.log(self.asset_value / self.debt_face) + (self.r + 0.5*self.sigma_A**2)*self.T) / sigma_sqrtT
+        d2 = d1 - sigma_sqrtT
+        return d1, d2
+
+    def default_probability(self):
+        """Risk-neutral PD at T: N(-d2)."""
+        _, d2 = self._d1_d2()
+        return norm.cdf(-d2)
+
+    def equity_value(self):
+        """Equity as a call on assets: E0 = V0*N(d1) - D*e^{-rT}*N(d2)."""
+        d1, d2 = self._d1_d2()
+        return self.asset_value*norm.cdf(d1) - self.debt_face*np.exp(-self.r*self.T)*norm.cdf(d2)
+
+    def debt_value(self):
+        """Defaultable debt value: B0 = V0 - E0."""
+        return self.asset_value - self.equity_value()
+
+    def credit_spread(self):
+        """
+        Flat spread s that prices debt as B0 = D * exp(-(r+s)T):
+        s = - (1/T) * ln(B0 / D) - r
+        """
+        B0 = self.debt_value()
+        return -np.log(B0 / self.debt_face) / self.T - self.r
+
+
+# -----------------------------
+# Parameters (example)
+# -----------------------------
+V0 = 25_000_000_000   # asset value
+D  = 22_000_000_000   # face debt due at T
+r  = 0.045            # risk-free rate (4.5%)
+sigma_A = 0.35        # asset volatility (35%)
+T  = 1.0              # years
+
+# -----------------------------
+# Run model
+# -----------------------------
+m = MertonModel(asset_value=V0, debt_value=D, risk_free_rate=r, sigma_asset=sigma_A, time_to_maturity=T)
+
+pd = m.default_probability()
+E0 = m.equity_value()
+B0 = m.debt_value()
+s  = m.credit_spread()
+
+# -----------------------------
+# Print outputs (units fixed)
+# -----------------------------
+print(f"Risk-neutral PD (T={T:.1f}y): {pd:.2%}")
+print(f"Equity value E0: {E0:,.2f}")
+print(f"Debt value  B0: {B0:,.2f}")
+print(f"Implied credit spread: {s*100:.2f}%  (~{s*1e4:.0f} bps)")
+
+# -----------------------------
+# Quick PD vs Leverage sketch
+# -----------------------------
+leverage = np.linspace(0.40, 1.20, 50)  # D/V range
+pds = []
+for L in leverage:
+    mm = MertonModel(asset_value=V0, debt_value=L*V0, risk_free_rate=r, sigma_asset=sigma_A, time_to_maturity=T)
+    pds.append(mm.default_probability())
+
+plt.figure(figsize=(6, 4))
+plt.plot(leverage, pds)
+plt.xlabel("Leverage (D/V)")
+plt.ylabel("PD (risk-neutral)")
+plt.title("Merton PD vs Leverage")
+plt.grid(True)
+
+# -----------------------------
+# Save artifacts
+# -----------------------------
+out_dir = Path("outputs/05_Merton")
+out_dir.mkdir(parents=True, exist_ok=True)
+plt.savefig(out_dir / "pd_vs_leverage.png", dpi=150, bbox_inches="tight")
+
+with open(out_dir / "merton_summary.txt", "w") as f:
+    f.write(f"V0={V0:.0f}, D={D:.0f}, r={r:.4f}, sigma_A={sigma_A:.4f}, T={T:.2f}\n")
+    f.write(f"PD={pd:.6f}\n")
+    f.write(f"E0={E0:.2f}\n")
+    f.write(f"B0={B0:.2f}\n")
+    f.write(f"Spread_pct={s*100:.4f}\n")
+    f.write(f"Spread_bps={s*1e4:.1f}\n")
+
+plt.show()
