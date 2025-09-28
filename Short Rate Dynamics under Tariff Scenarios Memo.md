@@ -1,4 +1,4 @@
-Source: [CIR Tariff-Sensitive Continued Analysis](https://github.com/katcohen/Fixed_income_Analysis/blob/main/Rates%20Outlook%3A%20CIR%20tariff-sensitive_Cont.%20Analysis.ipynb)
+Source: [Short Rate Dynamics under Tariff Scenarios (CIR Monte Carlo Analysis)](https://github.com/katcohen/Fixed_income_Analysis/blob/main/Short%20Rate%20Dynamics%20under%20Tariff%20Scenarios%20(CIR%20Monte%20Carlo%20Analysis).ipynb)
 
 # Rates Outlook — CIR (Tariff-Sensitive Scenarios)
 **Date:** 2025-08-30  
