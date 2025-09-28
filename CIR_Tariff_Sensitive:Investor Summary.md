@@ -17,3 +17,5 @@ Source: [CIR_Tariff_Sensitive](https://github.com/katcohen/Fixed_income_Analysis
 - DV01 within ±10% of benchmark  
 - HY at or below benchmark in escalation  
 - ≥5% liquidity sleeve
+
+For further analysis: [Short Rate Dynamics under Tariff Scenarios](https://github.com/katcohen/Fixed_income_Analysis/blob/main/Short%20Rate%20Dynamics%20under%20Tariff%20Scenarios%20Memo.md)
