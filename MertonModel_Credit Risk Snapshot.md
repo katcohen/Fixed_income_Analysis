@@ -14,7 +14,7 @@
 - **Equity value (E₀): \$5.56B**  
 - **Debt value (B₀): \$19.44B**  
 - **Implied flat credit spread**: **~7.9% (~790 bps)**  
-  - *Note:* your print line shows “7.86 bps” but that’s a **units bug** (see “Implementation note” below).
+  - *Note:* The print line shows “7.86 bps” but that’s a **units bug** (see “Implementation note” below).
 
 **Context:** A 1-yr PD near ~37% is in **distressed territory** (ballpark CCC/CC), indicating high refinancing risk and potential restructuring under this capital structure and volatility.
 
@@ -45,3 +45,10 @@
 ---
 
 ## Implementation Note (units fix)
+Implied credit spread: {s*100:.2f} bps
+
+But multiplying by 100 turns a decimal into **percent**, not **basis points**. Use **×10,000** for bps:
+```python
+print(f"Implied credit spread: {s*1e4:.0f} bps")  # e.g., ~786–790 bps
+# and/or also show percent:
+print(f"Implied credit spread: {s*100:.2f}%")
