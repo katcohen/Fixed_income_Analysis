@@ -1,3 +1,5 @@
+Source: [Fixed-Income Yield Curves, Bond Pricing, Duration & Convexity](https://github.com/katcohen/Fixed_income_Analysis/blob/main/MertonModel_%20Large_HY_Telecom.ipynb)
+
 # Executive Summary — Yield Curve & Portfolio Positioning
 
 - **Curve shape:** Front end remains inverted; curve slopes upward at longer maturities  
